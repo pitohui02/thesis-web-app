@@ -1,35 +1,115 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+"use client"
+
 import './App.css'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
-function App() {
-  const [count, setCount] = useState(0)
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod";
 
-  return (
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+import Dashboard from './dashboard'
+
+
+const FormSchema = z.object({
+  SequentialText: z.string().min(1, "Feedback is Required.").max(200)
+})
+
+export default function App() {
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      SequentialText: ""
+    },
+  })
+
+  const buttonSubmit = () => {
+      //analyzeText();
+  }
+
+  return(
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      
+      <Form {...form}>
+        <form 
+          onSubmit={form.handleSubmit(buttonSubmit)}
+          className="flex flex-col space-y-4 bg-slate-100 py-8 px-4 rounded-lg shadow-sm max-w-[40rem]"
+        >
+        
+        <h5 className="font-bold text-xl">Give some Feedback to Mr. Juan Dela Cruz</h5>
+
+        <div className='flex flex-col space-y-5 items-center'>
+          <FormField
+                control={form.control}
+                name="SequentialText"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormMessage className="text-xs"/>
+                    <FormControl>
+                      <Input
+                        placeholder="Feedback..."
+                        className="rounded-lg w-[30rem]"
+                        {...field}
+                      />
+                    </FormControl>
+                    
+                  </FormItem>
+                )}
+              />
+          
+          <Button
+              type="submit"
+              variant="outline"
+              className="bg-[#8EABC9] hover:bg-[#C2D3E4] w-[30rem]"
+              
+            >
+            Submit
+          </Button>
+
+          <h3 className='font-bold text-l self-start'>Sentiment: </h3>
+          
+          <Dialog>
+            <DialogTrigger>
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-[#8EABC9] hover:bg-[#C2D3E4] w-[30rem]"
+              >
+              Check Graph
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent>
+              <Dashboard />
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        </form>
+      </Form>
+
+      
     </>
   )
 }
-
-export default App
