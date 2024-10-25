@@ -1,50 +1,64 @@
 import { Doughnut, Bar } from 'react-chartjs-2'
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js';
 import { Button } from "@/components/ui/button"
 
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
+ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+interface InputData {
+  data: {word: string, frequency: number}[]; 
+}
+
 
 export default function Dashboard() {
-    const data = {
-        labels: ['Positive', 'Neutral', 'Negative'],
-        datasets: [
-            {
-              label: 'Sentiment Analysis',
-              data: [65, 20, 15], // Change this data based on your sentiment analysis
-              backgroundColor: [
-                'rgba(75, 192, 192, 0.6)', // Color for Positive
-                'rgba(255, 206, 86, 0.6)', // Color for Neutral
-                'rgba(255, 99, 132, 0.6)', // Color for Negative
-              ],
-              borderColor: [
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(255, 99, 132, 1)',
-              ],
-              borderWidth: 1,
-            },
-          ],
-        };
+  const SentimentData = [50, 30, 20];
 
-        
-    }
+  const DoughnutChart = {
+    labels: ['Positive', 'Neutral', 'Negative'],
+    datasets: [{
+      label: 'Sentiments',
+      data: SentimentData,
+      backgroundColor: [
+        '#80EF80',
+        '#808080 ',
+        '#FF6961',
+      ],
 
+      borderColor: [
+        '#80EF80',
+        '#808080 ',
+        '#FF6961',
+      ],
 
+      borderWidth: 1,
+    }]
+  }
 
+  const BarData = {
+
+  }
     return(
         
         <>
-            <div className='flex flex-row space-x-5'>
+            <div className='flex flex-row space-x-5 items-center justify-evenly'>
 
+                <div className='flex flex-col items-center justify-center space-y-5'>
+                  <Doughnut options={{
+                            plugins: {
+                              title: {
+                                display: true,
+                                text: 'Sentiment Score',
+                                font: {
+                                  size: 20,
+                                  weight: 'bold'
+                                }
+                              }
+                            },
+                            responsive: true}} data={DoughnutChart} className='w-full max-w-lg h-80'/>
+                </div>
+
+                <div className='flex flex-col items-center'>
+                  
+                </div>
             </div>
         </>
     )

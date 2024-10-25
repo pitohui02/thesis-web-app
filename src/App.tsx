@@ -44,8 +44,13 @@ export default function App() {
     },
   })
 
-  const buttonSubmit = () => {
-      //analyzeText();
+  const buttonSubmit = (data: z.infer<typeof FormSchema>) => {
+    console.log(data)
+    //analyzeText();
+  }
+
+  const countWord = () => {
+
   }
 
   return(
@@ -82,7 +87,6 @@ export default function App() {
               type="submit"
               variant="outline"
               className="bg-[#8EABC9] hover:bg-[#C2D3E4] w-[30rem]"
-              
             >
             Submit
           </Button>
@@ -99,8 +103,7 @@ export default function App() {
               Check Graph
               </Button>
             </DialogTrigger>
-
-            <DialogContent>
+            <DialogContent className='max-w-[100rem] min-h-[40rem] bg-[#f5f5f5]'>
               <Dashboard />
             </DialogContent>
           </Dialog>
