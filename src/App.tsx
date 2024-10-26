@@ -53,7 +53,12 @@ export default function App() {
   const buttonSubmit = (data: InputText) => {
     console.log("Input Text: ", data);
     setgetData(data)
+    
+    form.reset({
+      SequentialText: ''
+    })
   }
+
 
   return(
     <>
@@ -62,6 +67,7 @@ export default function App() {
         <form 
           onSubmit={form.handleSubmit(buttonSubmit)}
           className="flex flex-col space-y-4 bg-slate-100 py-8 px-4 rounded-lg shadow-sm max-w-[40rem]"
+          autoComplete="off"
         >
         
         <h5 className="font-bold text-xl">Give some Feedback to Mr. Juan Dela Cruz</h5>
@@ -106,7 +112,7 @@ export default function App() {
               </Button>
             </DialogTrigger>
             <DialogContent className='max-w-[100rem] min-h-[40rem] bg-[#f5f5f5]'>
-              <Dashboard data={getData}/>
+              <Dashboard BarData={getData}/>
             </DialogContent>
           </Dialog>
         </div>
