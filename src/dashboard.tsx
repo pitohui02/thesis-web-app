@@ -2,14 +2,19 @@ import { Doughnut, Bar } from 'react-chartjs-2'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js';
 import { Button } from "@/components/ui/button"
 
+
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-interface InputData {
-  data: {word: string, frequency: number}[]; 
+interface transferData {
+  BarData: {
+    SequentialText: string, 
+  } | null
 }
 
 
-export default function Dashboard() {
+
+export default function Dashboard({BarData}: transferData) {
+  
   const SentimentData = [50, 30, 20];
 
   const DoughnutChart = {
@@ -33,9 +38,6 @@ export default function Dashboard() {
     }]
   }
 
-  const BarData = {
-
-  }
     return(
         
         <>
@@ -57,7 +59,8 @@ export default function Dashboard() {
                 </div>
 
                 <div className='flex flex-col items-center'>
-                  
+                  <p>{BarData ? JSON.stringify(BarData, null, 2) : "No data available."}
+                  </p>
                 </div>
             </div>
         </>

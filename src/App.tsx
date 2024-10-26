@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod";
+import { useState } from 'react'
 
 
 import {
@@ -35,7 +36,11 @@ const FormSchema = z.object({
   SequentialText: z.string().min(1, "Feedback is Required.").max(200)
 })
 
+type InputText = z.infer<typeof FormSchema>
+
 export default function App() {
+
+  const [getData, setgetData] = useState<InputText | null>(null)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -44,13 +49,10 @@ export default function App() {
     },
   })
 
-  const buttonSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log(data)
-    //analyzeText();
-  }
-
-  const countWord = () => {
-
+  
+  const buttonSubmit = (data: InputText) => {
+    console.log("Input Text: ", data);
+    setgetData(data)
   }
 
   return(
@@ -104,7 +106,7 @@ export default function App() {
               </Button>
             </DialogTrigger>
             <DialogContent className='max-w-[100rem] min-h-[40rem] bg-[#f5f5f5]'>
-              <Dashboard />
+              <Dashboard data={getData}/>
             </DialogContent>
           </Dialog>
         </div>
