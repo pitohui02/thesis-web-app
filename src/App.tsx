@@ -41,6 +41,7 @@ type InputText = z.infer<typeof FormSchema>
 export default function App() {
 
   const [getData, setgetData] = useState<InputText | null>(null)
+  const [SentimentPredict, setSentimentPredict] = useState<string>("")
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -53,12 +54,30 @@ export default function App() {
   const buttonSubmit = (data: InputText) => {
     console.log("Input Text: ", data);
     setgetData(data)
+
+    const sentiment = model_predict(data.SequentialText)
+    setSentimentPredict(sentiment)
     
     form.reset({
       SequentialText: ''
     })
   }
 
+  const model_predict = (text: string): string => {
+    const lower_text = text.toLowerCase()
+    if(lower_text === "good") {
+      return "Positive"
+    }
+
+    else if(lower_text === "bad"){
+      return "Negative"
+    }
+
+    else {
+      return "neutral"
+    }
+
+  }
 
   return(
     <>
@@ -99,7 +118,7 @@ export default function App() {
             Submit
           </Button>
 
-          <h3 className='font-bold text-l self-start'>Sentiment: </h3>
+          <h3 className='font-bold text-l self-start'>Sentiment: {SentimentPredict}</h3>
           
           <Dialog>
             <DialogTrigger>
@@ -112,7 +131,7 @@ export default function App() {
               </Button>
             </DialogTrigger>
             <DialogContent className='max-w-[100rem] min-h-[40rem] bg-[#f5f5f5]'>
-              <Dashboard BarData={getData}/>
+              <Dashboard BarData={getData} sentiment={SentimentPredict} />
             </DialogContent>
           </Dialog>
         </div>
@@ -124,3 +143,4 @@ export default function App() {
     </>
   )
 }
+
