@@ -1,3 +1,5 @@
+
+If thesis_env does not work
 Create a virtual env on thesis-backend
 
 # python -m venv <environment_name>
