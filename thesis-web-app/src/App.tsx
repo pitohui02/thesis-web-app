@@ -8,28 +8,28 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod";
 import { useState } from 'react'
+import { SentimentResponse } from './types/sentiment';
+import { analyzeSentiment } from './api/sentimentApi';
 
 
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 
+
+
 import Dashboard from './dashboard'
+
 
 
 const FormSchema = z.object({
