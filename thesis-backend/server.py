@@ -5,11 +5,19 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 import re
 import nltk
+
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+nltk.download('stopwords')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('averaged_perceptron_tagger_eng')
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, TreebankWordTokenizer
 from nltk.stem import WordNetLemmatizer
@@ -18,9 +26,7 @@ from nltk.corpus import wordnet
 
 from symspellpy import SymSpell, Verbosity
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+
 
 app = Flask(__name__)
 CORS(app)
@@ -95,7 +101,7 @@ def tokenize_words(text):
     return pad_sequences(sequences, maxlen=max_len, padding='pre')[0]
 
 
-@app.route("/api/predict")
+@app.route("/api/predict", methods=['POST'])
 def predict():
     try:
         data = request.get_json()
@@ -105,24 +111,27 @@ def predict():
         text = data['text']
         
         cleaned_text = preprocess(text)
-        tokenized_text = tokenize_words(clean_text)
+        tokenized_text = tokenize_words(cleaned_text)
         
-        prediction = model.predict(np.array[tokenized_text])[0]
+        prediction = model.predict(np.array([tokenized_text]))[0]
         
-        label_categories = ['negative', 'neutral', 'positive']
+        label_categories = ['positive', 'neutral', 'negative']
         predicted_label = label_categories[np.argmax(prediction)]
         
         response = {
             'text': text,
             'sentiment': predicted_label,
-            'confidence': prediction
+            'confidence': prediction.tolist()
         }
         
         return jsonify(response)
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-        
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({'status': 'healthy'})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
