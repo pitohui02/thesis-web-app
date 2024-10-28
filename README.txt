@@ -8,4 +8,6 @@ Activate the environment
 
 # pip install Flask flask-cors numpy tensorflow keras nltk symspellpy
 
-# run the server 
+Run the server 
+
+# python server.py
