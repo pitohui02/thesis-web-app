@@ -6,6 +6,6 @@ Activate the environment
 
 # For windows environment_name/Scripts/Activate
 
-# PIP install all packages 
+# pip install Flask flask-cors numpy tensorflow keras nltk symspellpy
 
 # run the server 
