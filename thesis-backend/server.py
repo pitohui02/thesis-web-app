@@ -31,7 +31,7 @@ from symspellpy import SymSpell, Verbosity
 app = Flask(__name__)
 CORS(app)
 
-model_path = 'sentiment_analysis_final.keras'
+model_path = 'final_model.keras'
 dictionary_path = 'frequency_dictionary_en_82_765.txt'
 
 model = keras.models.load_model(model_path)
