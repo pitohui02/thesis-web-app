@@ -1,0 +1,26 @@
+# Virtual Environment
+thesis_env/
+new_thesis_env/
+venv/
+env/
+.venv/
+.env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Keras models (optional - depending on whether you want to track them)
+# *.keras
+
+# Local environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# System
+.DS_Store
