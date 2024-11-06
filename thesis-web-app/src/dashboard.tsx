@@ -14,8 +14,6 @@ interface transferData {
   
 }
 
-
-
 export default function Dashboard({BarData, sentiment}: transferData) {
   
   const [sentimentData, setSentimentData] = useState<number[]>(() => {
