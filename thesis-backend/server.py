@@ -10,6 +10,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 import re
 import nltk
+import json
 
 nltk.download('punkt')
 nltk.download('wordnet')
@@ -33,6 +34,7 @@ CORS(app)
 
 model_path = 'final_model.keras'
 dictionary_path = 'frequency_dictionary_en_82_765.txt'
+tokenizer_path = 'tokenizer.json'
 
 model = keras.models.load_model(model_path)
 
@@ -94,7 +96,15 @@ def preprocess(text):
     text = combine_neg_phrase(text)
     return text
 
+
+with open(tokenizer_path, 'r', encoding='utf-8') as f:
+        tokenizer_json = f.read()  # Read as string first
+        tokenizer = tf.keras.preprocessing.text.tokenizer_from_json(tokenizer_json)
+        print("Loaded tokenizer successfully")
+
 tokenizer = Tokenizer(num_words=max_words)
+
+
 
 def tokenize_words(text):
     sequences = tokenizer.texts_to_sequences([text])
@@ -116,12 +126,16 @@ def predict():
         prediction = model.predict(np.array([tokenized_text]))[0]
         
         label_categories = ['positive', 'neutral', 'negative']
+        label_categories = ['positive', 'neutral', 'negative']
         predicted_label = label_categories[np.argmax(prediction)]
         
         response = {
             'text': text,
             'sentiment': predicted_label,
-            'confidence': prediction.tolist()
+            'confidence': {
+                    category: float(score) 
+                    for category, score in zip(label_categories, prediction)
+                }
         }
         
         return jsonify(response)
