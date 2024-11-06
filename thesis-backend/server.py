@@ -1,5 +1,8 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS 
+from flask_cors import CORS
+
+import pickle
+import os
 
 import numpy as np
 import tensorflow as tf
@@ -12,12 +15,13 @@ import re
 import nltk
 import json
 
-nltk.download('punkt')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
-nltk.download('stopwords')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('averaged_perceptron_tagger_eng')
+nltk.download("punkt")
+nltk.download("punkt_tab")
+nltk.download("wordnet")
+nltk.download("omw-1.4")
+nltk.download("stopwords")
+nltk.download("averaged_perceptron_tagger")
+nltk.download("averaged_perceptron_tagger_eng")
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, TreebankWordTokenizer
@@ -28,13 +32,12 @@ from nltk.corpus import wordnet
 from symspellpy import SymSpell, Verbosity
 
 
-
 app = Flask(__name__)
 CORS(app)
 
-model_path = 'final_model.keras'
-dictionary_path = 'frequency_dictionary_en_82_765.txt'
-tokenizer_path = 'tokenizer.json'
+model_path = "final_model.keras"
+dictionary_path = "frequency_dictionary_en_82_765.txt"
+tokenizer_path = "tokenizer.pickle"
 
 model = keras.models.load_model(model_path)
 
@@ -42,18 +45,31 @@ model = keras.models.load_model(model_path)
 max_words = 15000
 max_len = 100
 
+if os.path.exists(tokenizer_path):
+    print("Loading saved tokenizer...")
+    with open(tokenizer_path, "rb") as handle:
+        tokenizer = pickle.load(handle)
+else:
+    print(
+        "ERROR: Tokenizer file not found! Please run the training code first to generate the tokenizer.pickle file"
+    )
+    # Initialize an empty tokenizer as fallback (not recommended for production)
+    tokenizer = Tokenizer(num_words=max_words)
+
 
 def clean_text(text):
     tree_tokenize = TreebankWordTokenizer()
     text = tree_tokenize.tokenize(text)
-    text = ' '.join(text)
-    text = re.sub(r'[^a-zA-Z\s]', '', text)
-    text = re.sub(r'\s{2,}', ' ', text)
+    text = " ".join(text)
+    text = re.sub(r"[^a-zA-Z\s]", "", text)
+    text = re.sub(r"\s{2,}", " ", text)
     text = text.strip()
     return text.lower()
 
+
 sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
 sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
+
 
 def spell_correction(text):
     corrected_text = []
@@ -63,30 +79,67 @@ def spell_correction(text):
         corrected_text.append(corrected_word)
     return " ".join(corrected_text)
 
+
 def get_wordnet_pos(word):
     tag = pos_tag([word])[0][1][0].upper()  # Get first letter of POS tag
-    tag_dict = {"J": wordnet.ADJ, "N": wordnet.NOUN, "V": wordnet.VERB, "R": wordnet.ADV}
+    tag_dict = {
+        "J": wordnet.ADJ,
+        "N": wordnet.NOUN,
+        "V": wordnet.VERB,
+        "R": wordnet.ADV,
+    }
     return tag_dict.get(tag, wordnet.NOUN)
+
 
 def lemmatize_data(text):
     lemmatize = WordNetLemmatizer()
     words = word_tokenize(text)
     lemmatized_tokens = [
-        lemmatize.lemmatize(word, get_wordnet_pos(word))
-        for word in words
+        lemmatize.lemmatize(word, get_wordnet_pos(word)) for word in words
     ]
     return " ".join(lemmatized_tokens)
 
+
 negative_words = {
-       "no", "not", "nor", "neither", "never", "none", "nobody", "nothing",
-       "nowhere", "cannot", "isn't", "wasn't", "aren't", "weren't", "don't",
-       "doesn't", "didn't", "hasn't", "haven't", "hadn't", "won't", "wouldn't",
-       "can't", "couldn't", "shouldn't", "mightn't", "mustn't", "without"
+    "no",
+    "not",
+    "nor",
+    "neither",
+    "never",
+    "none",
+    "nobody",
+    "nothing",
+    "nowhere",
+    "cannot",
+    "isn't",
+    "wasn't",
+    "aren't",
+    "weren't",
+    "don't",
+    "doesn't",
+    "didn't",
+    "hasn't",
+    "haven't",
+    "hadn't",
+    "won't",
+    "wouldn't",
+    "can't",
+    "couldn't",
+    "shouldn't",
+    "mightn't",
+    "mustn't",
+    "without",
 }
 
+
 def combine_neg_phrase(text):
-    negation_pattern = r'\b(?:' + '|'.join(map(re.escape, negative_words)) + r')\b\s+\w+'
-    return re.sub(negation_pattern, lambda match: match.group(0).replace(' ', '_'), text)
+    negation_pattern = (
+        r"\b(?:" + "|".join(map(re.escape, negative_words)) + r")\b\s+\w+"
+    )
+    return re.sub(
+        negation_pattern, lambda match: match.group(0).replace(" ", "_"), text
+    )
+
 
 def preprocess(text):
     text = clean_text(text)
@@ -97,55 +150,77 @@ def preprocess(text):
     return text
 
 
-with open(tokenizer_path, 'r', encoding='utf-8') as f:
-        tokenizer_json = f.read()  # Read as string first
-        tokenizer = tf.keras.preprocessing.text.tokenizer_from_json(tokenizer_json)
-        print("Loaded tokenizer successfully")
+# tokenizer = Tokenizer(num_words=max_words)
 
-tokenizer = Tokenizer(num_words=max_words)
 
 
 
 def tokenize_words(text):
     sequences = tokenizer.texts_to_sequences([text])
-    return pad_sequences(sequences, maxlen=max_len, padding='pre')[0]
+    return pad_sequences(sequences, maxlen=max_len, padding="pre")[0]
 
 
-@app.route("/api/predict", methods=['POST'])
+@app.route("/api/predict", methods=["POST"])
 def predict():
     try:
         data = request.get_json()
-        if 'text' not in data:
-            return jsonify({'error': 'No input provided'}), 400
-        
-        text = data['text']
-        
-        cleaned_text = preprocess(text)
-        tokenized_text = tokenize_words(cleaned_text)
-        
-        prediction = model.predict(np.array([tokenized_text]))[0]
-        
-        label_categories = ['positive', 'neutral', 'negative']
-        label_categories = ['positive', 'neutral', 'negative']
-        predicted_label = label_categories[np.argmax(prediction)]
-        
-        response = {
-            'text': text,
-            'sentiment': predicted_label,
-            'confidence': {
-                    category: float(score) 
-                    for category, score in zip(label_categories, prediction)
-                }
-        }
-        
-        return jsonify(response)
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        if "text" not in data:
+            return jsonify({"error": "No input provided"}), 400
 
-@app.route('/health', methods=['GET'])
+        text = data["text"]
+        print(f"Original text: {text}")  # Debug print
+
+        cleaned_text = preprocess(text)
+        print(f"After preprocessing: {cleaned_text}")  # Debug print
+
+        print(f"Tokenizer vocabulary size: {len(tokenizer.word_index)}")
+        word_sequences = tokenizer.texts_to_sequences([cleaned_text])
+        print(f"Word sequences before padding: {word_sequences}")
+
+        tokenized_text = tokenize_words(cleaned_text)
+        print(f"Tokenized shape: {tokenized_text.shape}")  # Debug print
+        print(
+            f"Tokenized text (first few tokens): {tokenized_text[:10]}"
+        )  # Debug print
+
+        # Convert to batch format and check input shape
+        input_tensor = np.array([tokenized_text])
+        print(f"Input tensor shape: {input_tensor.shape}")  # Debug print
+
+        prediction = model.predict(input_tensor, verbose=0)[0]
+        print(f"Raw prediction: {prediction}")  # Debug print
+
+        label_categories = ["negative", "neutral", "positive"]
+        predicted_label = label_categories[np.argmax(prediction)]
+        print(f"Predicted label: {predicted_label}")  # Debug print
+
+        response = {
+            "text": text,
+            "preprocessed_text": cleaned_text,  # Adding preprocessed text to response
+            "sentiment": predicted_label,
+            "confidence": prediction.tolist(),
+        }
+
+        return jsonify(response)
+
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")  # Debug print
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/health", methods=["GET"])
 def health_check():
-    return jsonify({'status': 'healthy'})
+    return jsonify({"status": "healthy"})
+
 
 if __name__ == "__main__":
+    # Print model summary and configuration
+    print("\nModel Summary:")
+    model.summary()
+
+    # Print tokenizer configuration
+    print("\nTokenizer Configuration:")
+    print(f"Max words: {max_words}")
+    print(f"Max length: {max_len}")
+
     app.run(debug=True, port=5000)

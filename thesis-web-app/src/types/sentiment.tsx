@@ -1,5 +1,5 @@
 export interface SentimentResponse {
-    text: string;
-    sentiment: 'positive' | 'negative';
-    confidence: number;
-  }
+	text: string;
+	sentiment: "positive" | "neutral" | "negative";
+	confidence: number[];
+}
