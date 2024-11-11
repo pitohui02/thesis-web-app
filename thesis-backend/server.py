@@ -11,6 +11,8 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+from collections import Counter
+
 import re
 import nltk
 import json
@@ -65,7 +67,6 @@ def clean_text(text):
     text = re.sub(r"\s{2,}", " ", text)
     text = text.strip()
     return text.lower()
-
 
 sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
 sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
@@ -131,6 +132,13 @@ negative_words = {
     "without",
 }
 
+stop_words = set(stopwords.words('english')) - negative_words
+
+def remove_stopwords(text):
+    words = word_tokenize(text)
+    filtered_words = [word for word in words if word not in stop_words]
+    return ' '.join(filtered_words)
+
 
 def combine_neg_phrase(text):
     negation_pattern = (
@@ -152,12 +160,42 @@ def preprocess(text):
 
 # tokenizer = Tokenizer(num_words=max_words)
 
-
-
-
 def tokenize_words(text):
     sequences = tokenizer.texts_to_sequences([text])
     return pad_sequences(sequences, maxlen=max_len, padding="pre")[0]
+
+@app.route("/api/word-frequency", methods=["POST"])
+def get_word_frequency():
+    try:
+        data = request.get_json()
+        if "text" not in data:
+            return jsonify({"error": "No input provided"}), 400
+            
+        text = data["text"]
+        cleaned_text = remove_stopwords(text)
+        
+        # Split into words and count frequencies
+        words = cleaned_text.split()
+        word_freq = Counter(words)
+        
+        # Convert to sorted list of (word, count) pairs
+        sorted_freq = sorted(word_freq.items(), key=lambda x: x[1], reverse=True)
+        
+        # Get top 20 most frequent words
+        top_words = sorted_freq[:20]
+        
+        response = {
+            "frequency_data": [
+                {"word": word, "count": count} 
+                for word, count in top_words
+            ]
+        }
+        
+        return jsonify(response)
+        
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/predict", methods=["POST"])
@@ -190,7 +228,7 @@ def predict():
         prediction = model.predict(input_tensor, verbose=0)[0]
         print(f"Raw prediction: {prediction}")  # Debug print
 
-        label_categories = ["negative", "neutral", "positive"]
+        label_categories = ["Negative", "Neutral", "Positive"]
         predicted_label = label_categories[np.argmax(prediction)]
         print(f"Predicted label: {predicted_label}")  # Debug print
 

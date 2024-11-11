@@ -7,9 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { SentimentResponse } from "./types/sentiment";
+import { SentimentResponse, WordFrequency } from './types/sentiment';
 import { getSentimentAnalysis } from "./api/sentimentApi";
-import { cn } from "./lib/utils"
+import { fetchWordFrequency } from "./api/sentimentApi";
+// import { cn } from "./lib/utils"
 
 import {
   Form,
@@ -33,6 +34,8 @@ export default function App() {
   const [getData, setgetData] = useState<InputText | null>(null);
   const [SentimentPredict, setSentimentPredict] = useState<string>("");
   const [isPredicting, setIsPredicting] = useState(false); 
+  const [Frequency_data, setFrequency_data] = useState<WordFrequency[] | null>(null);
+
 
   const getFormBorderStyle = () => {
     switch (SentimentPredict.toLowerCase()) {
@@ -43,7 +46,7 @@ export default function App() {
       case 'neutral':
         return { borderColor: '#808080' }; 
       default:
-        return { borderColor: '#E5E7EB' }; // Light gray
+        return { borderColor: '#E5E7EB' }; 
     }
   };
 
@@ -61,8 +64,10 @@ export default function App() {
 
     try {
       const sentiment = await getSentimentAnalysis(data.SequentialText);
+      const frequency_data = await fetchWordFrequency(data.SequentialText)
       console.log(sentiment);
       setSentimentPredict(sentiment.sentiment);
+      setFrequency_data(frequency_data)
     } finally {
       setIsPredicting(false);
     }
@@ -130,7 +135,7 @@ export default function App() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-[100rem] min-h-[40rem] bg-[#f5f5f5] " aria-describedby="sentiment score">
-                <Dashboard BarData={getData} sentiment={SentimentPredict} />
+                <Dashboard BarData={getData} sentiment={SentimentPredict} frequencyData={Frequency_data}/>
               </DialogContent>
             </Dialog>
           </div>
