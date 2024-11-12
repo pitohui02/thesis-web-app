@@ -166,6 +166,8 @@ def tokenize_words(text):
 
 @app.route("/api/word-frequency", methods=["POST", "OPTIONS"])
 def get_word_frequency():
+    if request.method == "OPTIONS":
+        return '', 200
     try:
         data = request.get_json()
         if "text" not in data:
@@ -200,6 +202,8 @@ def get_word_frequency():
 
 @app.route("/api/predict", methods=["POST", "OPTIONS"])
 def predict():
+    if request.method == "OPTIONS":
+        return '', 200
     try:
         data = request.get_json()
         if "text" not in data:
