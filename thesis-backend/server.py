@@ -35,7 +35,7 @@ from symspellpy import SymSpell, Verbosity
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://thesis-backend-b3sp.onrender.com"])
 
 model_path = "final_model.keras"
 dictionary_path = "frequency_dictionary_en_82_765.txt"
@@ -253,7 +253,6 @@ def health_check():
 
 if __name__ == "__main__":
     # Print model summary and configuration
-    CORS(app, origins=["https://thesis-backend-b3sp.onrender.com"])
     print("\nModel Summary:")
     model.summary()
 
