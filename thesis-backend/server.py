@@ -164,7 +164,7 @@ def tokenize_words(text):
     sequences = tokenizer.texts_to_sequences([text])
     return pad_sequences(sequences, maxlen=max_len, padding="pre")[0]
 
-@app.route("/api/word-frequency", methods=["POST"])
+@app.route("/api/word-frequency", methods=["POST", "OPTIONS"])
 def get_word_frequency():
     try:
         data = request.get_json()
@@ -198,7 +198,7 @@ def get_word_frequency():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/api/predict", methods=["POST"])
+@app.route("/api/predict", methods=["POST", "OPTIONS"])
 def predict():
     try:
         data = request.get_json()
