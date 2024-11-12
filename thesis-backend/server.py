@@ -35,7 +35,7 @@ from symspellpy import SymSpell, Verbosity
 
 
 app = Flask(__name__)
-CORS(app, origins=["https://thesis-backend-b3sp.onrender.com"])
+CORS(app, origins=["https://thesis-web-app-sa6k.onrender.com"])
 
 model_path = "final_model.keras"
 dictionary_path = "frequency_dictionary_en_82_765.txt"
@@ -261,4 +261,4 @@ if __name__ == "__main__":
     print(f"Max words: {max_words}")
     print(f"Max length: {max_len}")
 
-    # app.run(debug=True, port=5000)
+   app.run(host="0.0.0.0", port=os.getenv("PORT", 5000))
