@@ -253,6 +253,7 @@ def health_check():
 
 if __name__ == "__main__":
     # Print model summary and configuration
+    CORS(app, origins=["https://thesis-backend-b3sp.onrender.com"])
     print("\nModel Summary:")
     model.summary()
 
