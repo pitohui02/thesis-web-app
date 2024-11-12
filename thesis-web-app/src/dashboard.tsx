@@ -179,8 +179,8 @@ export default function Dashboard({
     datasets: [{
       label: 'Word Frequency',
       data: localFrequencyData.map(item => item.count),
-      backgroundColor: '#80EF80',
-      borderColor: '#80EF80',
+      backgroundColor: '#73A5C6',
+      borderColor: '#73A5C6',
       borderWidth: 1,
     }]
   };

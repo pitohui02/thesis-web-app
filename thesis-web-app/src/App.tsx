@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { SentimentResponse, WordFrequency } from './types/sentiment';
+import { WordFrequency } from './types/sentiment';
 import { getSentimentAnalysis } from "./api/sentimentApi";
 import { fetchWordFrequency } from "./api/sentimentApi";
 // import { cn } from "./lib/utils"
