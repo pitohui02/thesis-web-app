@@ -261,4 +261,4 @@ if __name__ == "__main__":
     print(f"Max words: {max_words}")
     print(f"Max length: {max_len}")
 
-    app.run(debug=True, port=5000)
+    # app.run(debug=True, port=5000)
