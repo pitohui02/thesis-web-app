@@ -261,4 +261,4 @@ if __name__ == "__main__":
     print(f"Max words: {max_words}")
     print(f"Max length: {max_len}")
 
-   app.run(host="0.0.0.0", port=os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=os.getenv("PORT", 5000))
