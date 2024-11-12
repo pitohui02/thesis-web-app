@@ -169,12 +169,13 @@ def tokenize_words(text):
     origins="https://thesis-web-app-sa6k.onrender.com",
     supports_credentials=True,
     resources={r"/api/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}},
-    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials", "Access-Control-Allow-Origin"]
+    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+    methods=["POST", "OPTIONS"]
 )
 @app.route("/api/word-frequency", methods=["POST", "OPTIONS"])
 def get_word_frequency():
     if request.method == "OPTIONS":
-        return '', 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
+        return '', 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com', 'Access-Control-Allow-Headers': 'Content-Type'}
     try:
         data = request.get_json()
         if "text" not in data:
@@ -211,12 +212,13 @@ def get_word_frequency():
     origins="https://thesis-web-app-sa6k.onrender.com",
     supports_credentials=True,
     resources={r"/api/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}},
-    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials", "Access-Control-Allow-Origin"]
+    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
+    methods=["POST", "OPTIONS"]
 )
 @app.route("/api/predict", methods=["POST", "OPTIONS"])
 def predict():
     if request.method == "OPTIONS":
-        return '', 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
+        return '', 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com', 'Access-Control-Allow-Headers': 'Content-Type'}
     try:
         data = request.get_json()
         if "text" not in data:
