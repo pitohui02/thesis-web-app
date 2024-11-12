@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 import pickle
 import os
@@ -164,6 +164,7 @@ def tokenize_words(text):
     sequences = tokenizer.texts_to_sequences([text])
     return pad_sequences(sequences, maxlen=max_len, padding="pre")[0]
 
+@cross_origin(origins="https://thesis-web-app-sa6k.onrender.com", supports_credentials=True)
 @app.route("/api/word-frequency", methods=["POST", "OPTIONS"])
 def get_word_frequency():
     if request.method == "OPTIONS":
@@ -199,7 +200,7 @@ def get_word_frequency():
         print(f"Error occurred: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-
+@cross_origin(origins="https://thesis-web-app-sa6k.onrender.com", supports_credentials=True)
 @app.route("/api/predict", methods=["POST", "OPTIONS"])
 def predict():
     if request.method == "OPTIONS":
