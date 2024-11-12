@@ -35,7 +35,7 @@ from symspellpy import SymSpell, Verbosity
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}})
+CORS(app)
 
 model_path = "final_model.keras"
 dictionary_path = "frequency_dictionary_en_82_765.txt"
@@ -169,16 +169,16 @@ def tokenize_words(text):
     origins="https://thesis-web-app-sa6k.onrender.com",
     supports_credentials=True,
     resources={r"/api/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}},
-    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"]
+    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials", "Access-Control-Allow-Origin"]
 )
 @app.route("/api/word-frequency", methods=["POST", "OPTIONS"])
 def get_word_frequency():
     if request.method == "OPTIONS":
-        return '', 200
+        return '', 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
     try:
         data = request.get_json()
         if "text" not in data:
-            return jsonify({"error": "No input provided"}), 400
+            return jsonify({"error": "No input provided"}), 400, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
             
         text = data["text"]
         cleaned_text = remove_stopwords(text)
@@ -200,27 +200,27 @@ def get_word_frequency():
             ]
         }
         
-        return jsonify(response)
+        return jsonify(response), 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
         
     except Exception as e:
         print(f"Error occurred: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
 
 
 @cross_origin(
     origins="https://thesis-web-app-sa6k.onrender.com",
     supports_credentials=True,
     resources={r"/api/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}},
-    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"]
+    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials", "Access-Control-Allow-Origin"]
 )
 @app.route("/api/predict", methods=["POST", "OPTIONS"])
 def predict():
     if request.method == "OPTIONS":
-        return '', 200
+        return '', 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
     try:
         data = request.get_json()
         if "text" not in data:
-            return jsonify({"error": "No input provided"}), 400
+            return jsonify({"error": "No input provided"}), 400, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
 
         text = data["text"]
         print(f"Original text: {text}")  # Debug print
@@ -256,16 +256,16 @@ def predict():
             "confidence": prediction.tolist(),
         }
 
-        return jsonify(response)
+        return jsonify(response), 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
 
     except Exception as e:
         print(f"Error occurred: {str(e)}")  # Debug print
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
 
 
 @app.route("/health", methods=["GET"])
 def health_check():
-    return jsonify({"status": "healthy"})
+    return jsonify({"status": "healthy"}), 200, {'Access-Control-Allow-Origin': 'https://thesis-web-app-sa6k.onrender.com'}
 
 
 if __name__ == "__main__":
