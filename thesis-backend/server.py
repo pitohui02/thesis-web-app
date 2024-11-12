@@ -35,7 +35,7 @@ from symspellpy import SymSpell, Verbosity
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}}, supports_credentials=True)
+CORS(app, resources={r"/api/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}})
 
 model_path = "final_model.keras"
 dictionary_path = "frequency_dictionary_en_82_765.txt"
