@@ -164,7 +164,13 @@ def tokenize_words(text):
     sequences = tokenizer.texts_to_sequences([text])
     return pad_sequences(sequences, maxlen=max_len, padding="pre")[0]
 
-@cross_origin(origins="https://thesis-web-app-sa6k.onrender.com", supports_credentials=True)
+
+@cross_origin(
+    origins="https://thesis-web-app-sa6k.onrender.com",
+    supports_credentials=True,
+    resources={r"/api/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}},
+    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"]
+)
 @app.route("/api/word-frequency", methods=["POST", "OPTIONS"])
 def get_word_frequency():
     if request.method == "OPTIONS":
@@ -200,7 +206,13 @@ def get_word_frequency():
         print(f"Error occurred: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-@cross_origin(origins="https://thesis-web-app-sa6k.onrender.com", supports_credentials=True)
+
+@cross_origin(
+    origins="https://thesis-web-app-sa6k.onrender.com",
+    supports_credentials=True,
+    resources={r"/api/*": {"origins": "https://thesis-web-app-sa6k.onrender.com"}},
+    allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Credentials"]
+)
 @app.route("/api/predict", methods=["POST", "OPTIONS"])
 def predict():
     if request.method == "OPTIONS":
