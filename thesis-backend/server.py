@@ -35,7 +35,7 @@ from symspellpy import SymSpell, Verbosity
 
 
 app = Flask(__name__)
-CORS(app, origins=["*"])
+CORS(app, origins=["*"], methods=["GET", "POST"], allow_headers=["Authorization", "Content-Type"])
 
 model_path = "final_model.keras"
 dictionary_path = "frequency_dictionary_en_82_765.txt"
@@ -166,9 +166,9 @@ def tokenize_words(text):
 
 
 
-@app.route("/api/word-frequency", methods=["POST", "OPTIONS"])
+@app.route("/api/word-frequency", methods=["POST"])
 def get_word_frequency():
-    if request.method == "OPTIONS":
+    if request.method == "POST":
         
         return '', 200, 
     
@@ -205,9 +205,9 @@ def get_word_frequency():
 
 
 
-@app.route("/api/predict", methods=["POST", "OPTIONS"])
+@app.route("/api/predict", methods=["POST"])
 def predict():
-    if request.method == "OPTIONS":
+    if request.method == "POST":
         return '', 200
     try:
         data = request.get_json()
