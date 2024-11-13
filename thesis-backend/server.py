@@ -169,10 +169,9 @@ def tokenize_words(text):
 @app.route("/api/word-frequency", methods=["POST", "OPTIONS"])
 def get_word_frequency():
     if request.method == "OPTIONS":
+        
         return '', 200, 
     
-    if request.method == "POST":
-        return '', 200, 
     try:
         data = request.get_json()
         if "text" not in data:
@@ -197,7 +196,7 @@ def get_word_frequency():
                 for word, count in top_words
             ]
         }
-        
+        response.headers["Access-Control-Allow-Origin"] = "https://thesis-web-app-sa6k.onrender.com"
         return jsonify(response), 200, 
         
     except Exception as e:
@@ -248,7 +247,7 @@ def predict():
             "sentiment": predicted_label,
             "confidence": prediction.tolist(),
         }
-
+        response.headers["Access-Control-Allow-Origin"] = "https://thesis-web-app-sa6k.onrender.com"
         return jsonify(response), 200, 
 
     except Exception as e:
