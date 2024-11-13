@@ -170,6 +170,9 @@ def tokenize_words(text):
 def get_word_frequency():
     if request.method == "OPTIONS":
         return '', 200, 
+    
+    if request.method == "POST":
+        return '', 200, 
     try:
         data = request.get_json()
         if "text" not in data:
@@ -267,5 +270,6 @@ if __name__ == "__main__":
     print("\nTokenizer Configuration:")
     print(f"Max words: {max_words}")
     print(f"Max length: {max_len}")
+    port = int(os.getenv("PORT", 5000))
 
-    app.run(host="0.0.0.0", port=os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
