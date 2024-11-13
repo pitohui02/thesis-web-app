@@ -37,7 +37,7 @@ export default function App() {
   const [Frequency_data, setFrequency_data] = useState<WordFrequency[] | null>(null);
 
 
-  const getFormBorderStyle = () => {
+  const getFormBorderStyle = () => { // Error
     switch (SentimentPredict.toLowerCase()) {
       case 'positive':
         return { borderColor: '#80EF80' }; 

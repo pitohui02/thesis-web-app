@@ -14,6 +14,7 @@ export const getSentimentAnalysis = async (text: string,): Promise<SentimentResp
 		const response = await axios.post<SentimentResponse>(
 			`${API_URL}/api/predict`, { text }); 
 			return response.data;
+			console.log(response.data);
 	} catch (error) {
 		if (axios.isAxiosError(error)) {
 			const axiosError = error as AxiosError<ErrorResponse>;
@@ -28,7 +29,8 @@ export const getSentimentAnalysis = async (text: string,): Promise<SentimentResp
 export const fetchWordFrequency = async (text: string): Promise<WordFrequency[]> => {
 	try {
 		const response = await axios.post<SentimentResponse>(`${API_URL}/api/word-frequency`, { text })
-		return response.data.frequency_data || [];
+		return response.data.frequency_data;
+		console.log(response.data.frequency_data);
 	} catch (error) {
 		if(axios.isAxiosError(error)) {
 			const axiosError = error as AxiosError<ErrorResponse>;
